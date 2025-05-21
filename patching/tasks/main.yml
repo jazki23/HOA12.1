@@ -1,14 +1,12 @@
 ---
-# tasks/main.yml for Ubuntu
-
 - name: Update apt cache
-  ansible.builtin.apt:
+  apt:
     update_cache: yes
   tags:
     - patch
 
 - name: Upgrade all packages to the latest version on Ubuntu
-  ansible.builtin.apt:
+  apt:
     upgrade: dist
     autoremove: yes
     autoclean: yes
@@ -16,13 +14,12 @@
     - patch
 
 - name: Gather package facts for system
-  ansible.builtin.package_facts:
+  package_facts:
 
 - name: Reboot the system if necessary (after package upgrade)
-  ansible.builtin.reboot:
+  reboot:
     reboot_timeout: 600
     test_command: uptime
   when: ansible_facts['pkg_mgr'] == 'apt'
   tags:
     - reboot
-
