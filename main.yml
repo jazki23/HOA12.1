@@ -4,7 +4,7 @@
   become: yes
   vars:
     new_user: admin
-    ssh_key_path: "/home/Kier/.ssh/id_rsa.pub" 
+    ssh_key_path: "/home/Kier/.ssh/id_rsa.pub"  # Correct path to your public key
     allowed_networks:
       - 192.168.56.0/24
     unnecessary_packages:
@@ -15,6 +15,10 @@
       - avahi-daemon
       - cups
     ssh_port: 22
+    # File paths for issue and motd
+    issue_file_path: "/HOA12.1/patching/files/issue"
+    motd_file_path: "/HOA12.1/patching/files/motd"
+    issue_net_file_path: "/HOA12.1/patching/files/issue.net"
 
   pre_tasks:
     - name: Load public SSH key from file
@@ -121,21 +125,21 @@
 
     - name: Set message of the day (MOTD)
       copy:
+        src: "{{ motd_file_path }}"
         dest: /etc/motd
-        content: |
-          Authorized access only. All activity may be monitored.
+        mode: '0644'
 
     - name: Set login banner (/etc/issue)
       copy:
+        src: "{{ issue_file_path }}"
         dest: /etc/issue
-        content: |
-          WARNING: This system is for authorized users only.
+        mode: '0644'
 
     - name: Set pre-login banner (/etc/issue.net)
       copy:
+        src: "{{ issue_net_file_path }}"
         dest: /etc/issue.net
-        content: |
-          Unauthorized access is prohibited. Disconnect now if not authorized.
+        mode: '0644'
 
   handlers:
     - name: reload SSH
