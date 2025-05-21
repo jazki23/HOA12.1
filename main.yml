@@ -4,7 +4,7 @@
   become: yes
   vars:
     new_user: admin
-    ssh_key_path: "/home/Kier/.ssh/id_rsa.pub"  # Correct path to your public key
+    ssh_key_path: "/home/Kier/.ssh/id_rsa.pub" 
     allowed_networks:
       - 192.168.56.0/24
     unnecessary_packages:
