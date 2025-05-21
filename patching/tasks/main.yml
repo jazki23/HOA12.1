@@ -1,40 +1,28 @@
 ---
-- name: Apply Security Patching and Update All Packages
-  hosts: all
-  become: yes
-  tasks:
+# tasks/main.yml for Ubuntu
 
-    # Debian-based systems (e.g., Ubuntu, Debian)
-    - name: Update apt cache and upgrade packages on Debian-based systems
-      ansible.builtin.apt:
-        update_cache: yes
-        upgrade: dist
-        autoremove: yes
-        autoclean: yes
-      when: ansible_os_family == "Debian"
-      tags:
-        - update
-        - patch
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+  tags:
+    - patch
 
-    # RedHat-based systems (e.g., CentOS, RHEL, Fedora)
-    - name: Update all packages on RedHat-based systems
-      ansible.builtin.yum:
-        name: '*'
-        state: latest
-      when: ansible_os_family == "RedHat"
-      tags:
-        - update
-        - patch
+- name: Upgrade all packages to the latest version on Ubuntu
+  ansible.builtin.apt:
+    upgrade: dist
+    autoremove: yes
+    autoclean: yes
+  tags:
+    - patch
 
-    # Ensure all system packages are up to date on all systems
-    - name: Ensure package list is up-to-date
-      ansible.builtin.package_facts:
+- name: Gather package facts for system
+  ansible.builtin.package_facts:
 
-    # Restart the system if any package update requires it
-    - name: Reboot system if required
-      ansible.builtin.reboot:
-        reboot_timeout: 600
-        test_command: uptime
-      when: ansible_facts['pkg_mgr'] in ['apt', 'yum']
-      tags:
-        - reboot
+- name: Reboot the system if necessary (after package upgrade)
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+    test_command: uptime
+  when: ansible_facts['pkg_mgr'] == 'apt'
+  tags:
+    - reboot
+
