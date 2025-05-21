@@ -1,1 +1,8 @@
+---
+- name: Apply patching role to Ubuntu system
+  hosts: all
+  become: yes
+
+  roles:
+    - patching
 
